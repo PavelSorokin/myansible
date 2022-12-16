@@ -1,0 +1,24 @@
+---
+etcd_version: 'v3.5.5'
+etcd_download_url:  'https://github.com/etcd-io/etcd/releases/download/{{ etcd_version }}/etcd-{{ etcd_version }}-linux-amd64.tar.gz'
+
+etcd_dir: /opt/etcd
+etcd_data_dir: '{{ etcd_dir }}/data'
+
+etcd_user: etcd
+etcd_group: etcd
+
+etcd_hostname_name: '{{ ansible_hostname }}'
+etcd_hostname_ip: '{{ ansible_default_ipv4.address }}'
+etcd_cluster_token: change_me # Уникальный токен, определяем в group vars, через vault
+
+etcd_init_cluster_state: "new" # Параметр инициализии кластера ('new' или 'existing').
+etcd_enable_v2: "true"
+etcd_ports:
+  client: 2379
+  peer: 2380
+
+etcd_init_cluster: {}
+#  - { ip: "127.0.0.1", host: "hostname1" } # Указываем кластер ETCD, переопределить в group vars
+#  - { ip: "127.0.1.1", host: "hostname" }
+#  - { ip: "127.0.2.1", host: "hostname" }

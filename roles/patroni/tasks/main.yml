@@ -1,0 +1,15 @@
+---
+- name: include vars
+  include_vars: "main.yml"
+
+- name: Include patroni-install instructions
+  include_tasks: patroni/patroni-install.yml
+  tags:
+  - patroni::install
+  - patroni::start
+
+- name: Include patroni-check instructions
+  include_tasks: patroni/patroni-check.yml
+  tags:
+  - patroni::patroni-check
+  - patroni::patroni-status

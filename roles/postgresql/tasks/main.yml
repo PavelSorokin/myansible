@@ -1,0 +1,56 @@
+- name: include vars {{ ansible_os_family | lower }}.yml
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+  tags:
+  - postgresql::install
+  - postgresql::init
+  - postgresql::hba
+  - postgresql::conf
+  - postgresql::start
+  - postgresql::ext
+  - postgresql::user
+  - postgresql::ext
+  
+- name: include vars postgresql-conf.yaml
+  include_vars: "postgresql-conf.yaml"
+  tags:
+  - postgresql::conf
+
+- name: Include postgresql-install instructions {{ ansible_os_family }}
+  include_tasks: postgresql/install-{{ ansible_os_family }}.yml ## Debian RedHat
+  tags:
+  - postgresql::install
+
+- name: Include postgresql-init instructions
+  include_tasks: postgresql/postgresql-init.yml
+  tags:
+  - postgresql::init
+
+- name: Include postgresql-hba instructions
+  include_tasks: postgresql/postgresql-hba.yml
+  tags:
+  - postgresql::hba
+
+- name: Include postgresql-conf instructions
+  include_tasks: postgresql/postgresql-conf.yml
+  tags:
+  - postgresql::conf
+
+- name: Include postgresql-start instructions
+  include_tasks: postgresql/postgresql-start.yml
+  tags:
+  - postgresql::start
+
+- name: Include postgresql-usr instructions
+  include_tasks: postgresql/postgresql-usr.yml
+  tags:
+  - postgresql::user
+
+- name: Include EXT instructions
+  include_tasks: postgresql/postgresql-ext.yml
+  tags:
+  - postgresql::ext
+
+- name: Include DB instructions
+  include_tasks: postgresql/postgresql-db.yml
+  tags:
+  - postgresql::db

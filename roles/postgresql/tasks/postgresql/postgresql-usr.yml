@@ -1,0 +1,49 @@
+- name: Prepare PostgreSQL | Who Master!?
+  become: true
+  become_user: postgres
+  command: "{{ postgresql_bin }}/psql -p {{ postgresql_port }} -Aqtc 'SELECT pg_is_in_recovery();'"
+  register: pg_is_in_recovery
+  changed_when: false
+  tags:
+    - postgresql::user
+
+- name: create users
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: postgres
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
+    role_attr_flags: "{{ item.flag }}"
+    login_user: postgres
+    login_unix_socket: "{{ postgresql_unix_socket_dir }}"
+    login_host: 127.0.0.1
+    port: "{{ postgresql_port }}"
+    state: "{{ item.state|default('present') }}"
+  with_items: "{{ postgresql_users }}"
+  when:
+    - pg_is_in_recovery.stdout == "f"
+    - postgresql_users is defined
+    - postgresql_users | length > 0
+  tags:
+    - postgresql::user
+
+- name: grant groups to user
+  become: true
+  become_user: postgres
+  postgresql_membership:
+    login_user: postgres
+    login_unix_socket: "{{ postgresql_unix_socket_dir }}"
+    login_host: 127.0.0.1
+    port: "{{ postgresql_port }}"
+    db: postgres
+    group: "{{ item.group }}"
+    target_roles: "{{ item.user }}"
+    state: "{{ item.state|default('present') }}"
+  with_items: "{{ postgresql_members }}"
+  when:
+    - pg_is_in_recovery.stdout == "f"
+    - postgresql_members is defined
+    - postgresql_members | length > 0
+  tags:
+    - postgresql::user

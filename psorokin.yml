@@ -1,0 +1,13 @@
+- hosts: patroni_cluster
+  gather_facts: yes
+  become: true
+  become_method: sudo
+
+  roles:
+  - role: postgresql
+  # - role: etcd
+  #   tags: etcd
+  # - role: postgresql
+  #   tags: postgresql::install
+  # - role: patroni
+  #   tags: patroni::install

@@ -1,0 +1,58 @@
+---
+
+- name: create group etcd
+  group:
+    name: '{{ etcd_group }}'
+    system: yes
+
+- name: create user etcd
+  user:
+    name: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
+    system: yes
+    shell: /bin/nologin
+
+- name: ensure etcd home dir exists
+  file:
+    path: '{{ etcd_dir }}/bin'
+    state: directory
+
+- name: create etcd data dir
+  file:
+    path: '{{ etcd_data_dir }}'
+    state: directory
+    owner: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
+    mode: 0755
+
+- name: download etcd
+  unarchive:
+    src: '{{ etcd_download_url }}'
+    dest: '{{ etcd_dir }}/bin'
+    keep_newer: yes
+    extra_opts: ['--strip-components=1', '--show-stored-names']
+    remote_src: yes
+    owner: '{{ etcd_user }}'
+    group: '{{ etcd_group }}'
+    creates: '{{ etcd_dir }}/bin/etcd'
+  notify: restart etcd
+
+- name: etcd config
+  template:
+    src: etcd.conf.j2
+    dest: '{{ etcd_dir }}/etcd.conf'
+  tags: etcd::config
+  notify: restart etcd
+
+- name: create systemd unit
+  template:
+    src: systemd.unit.j2
+    dest: /etc/systemd/system/etcd.service
+  notify: restart etcd
+
+- name: ensure etcd running
+  service:
+    name: etcd.service
+    daemon_reload: yes
+    state: started
+    enabled: yes

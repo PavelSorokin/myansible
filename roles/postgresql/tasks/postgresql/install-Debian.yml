@@ -1,0 +1,49 @@
+- block:
+    - name: add repository apt-key
+      apt_key:
+        url: "{{ item.key }}"
+        state: present
+      with_items: "{{ postgresql_apt_repository_keys }}"
+
+    - name: add repository
+      apt_repository:
+        repo: "{{ item.repo }}"
+        filename: "{{ postgresql_apt_filename }}"
+        state: present
+        update_cache: true
+      with_items: "{{ postgresql_apt_repository }}"
+  when:
+    - postgresql_apt_repository | length > 0
+    - postgresql_add_repo
+  tags:
+    - postgresql::install
+
+- name: ensure postgresql database-cluster manager package
+  package:
+    name: postgresql-common
+    state: present
+  tags:
+    - postgresql::install
+
+- name: disable initializing of a default postgresql cluster
+  replace:
+    path: /etc/postgresql-common/createcluster.conf
+    replace: create_main_cluster = false
+    regexp: ^#?create_main_cluster.*$
+  tags:
+    - postgresql::install
+
+- name: add initializing postgresql cluster wihs checksum
+  replace:
+    path: /etc/postgresql-common/createcluster.conf
+    replace: initdb_options = '--data-checksums'
+    regexp: ^#?initdb_options.*$
+  tags:
+    - postgresql::install
+
+- name: install PostgreSQL packages {{ postgresql_version }}
+  apt:
+    pkg: '{{ postgresql_packages }}'
+    state: present
+  tags:
+    - postgresql::install

@@ -1,0 +1,8 @@
+- name: ensure postgresql running
+  service:
+    name: "{{ postgresql_service }}"
+    daemon_reload: yes
+    state: started
+    enabled: yes
+  tags:
+    - postgresql::start

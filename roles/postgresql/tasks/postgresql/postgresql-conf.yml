@@ -1,0 +1,11 @@
+
+- name: generate postgresql.auto.conf file
+  template:
+    src: postgresql.auto.conf.j2
+    dest: "{{ postgresql_data }}/postgresql.auto.conf"
+    owner: postgres
+    group: postgres
+    mode: 0644
+  notify: restart postgresql
+  tags:
+    - postgresql::conf

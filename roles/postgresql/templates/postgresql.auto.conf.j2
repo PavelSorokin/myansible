@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+{% for key, value in (__postgresql_parameters|combine(postgresql_parameters)).items() %}
+{{ key }} = '{{ value }}'
+{% endfor %}

@@ -1,0 +1,52 @@
+---
+
+- hosts: all
+  become: true
+  vars_files:
+    - vars/users.yml
+  roles:
+    - role: users
+      tags: users
+
+- hosts: bridges
+  become: true
+  roles:
+    - role: matterbridge
+      tags: matterbridge
+
+- hosts: proxies
+  become: true
+  roles:
+    - role: dbs_proxy
+      tags: proxy, createproxy
+    - role: dbs_aliases
+      tags: proxy, aliases
+    - role: dnsmasq
+      tags: proxy, dns
+    - role: haproxy_dbs
+      tags: proxy, haproxy
+    - role: zabbix_agent
+      tags: proxy, zagent
+    # - role: firewalld
+    #   tags: proxy, firewall
+    - role: filebeat
+      tags: filebeat
+
+- hosts: prometheus
+  become: true
+  roles:
+    - role: prometheus
+      tags: prometheus
+    - role: iptables
+      tags: iptables
+    - role: grafana
+      tags: grafana
+
+- name: Install vpn-users site
+  hosts: users_vpn
+  become: true
+  roles:
+    - role: nginx
+      tags: web
+    - role: vpn-users-site
+      tags: vpn-users-site, vpn-site

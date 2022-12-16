@@ -1,0 +1,42 @@
+- name: сonfigure postgresql repository
+  package:
+    name: "{{ postgresql_yum_repo_url }}"
+  when:
+    - postgresql_add_repo
+  tags:
+    - postgresql::install
+
+# PostgreSQL prepare for install (for RHEL 8)
+- block:
+    - name: PostgreSQL | check if appstream module is enabled
+      command: 'dnf -y -C module list postgresql'
+      register: postgresql_module_result
+      changed_when: false
+
+    - name: PostgreSQL | disable appstream module
+      command: 'dnf -y -C module disable postgresql'
+      args:
+        warn: false
+      when: "'[x] ' not in postgresql_module_result.stdout"
+  when:
+    - ansible_distribution_major_version >= '8'
+  ignore_errors: true
+  tags:
+    - postgresql::install
+
+- name: install PostgreSQL packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ postgresql_packages }}"
+  tags:
+    - postgresql::install
+
+- name: new pgdata for postgresql
+  replace:
+    path: "/usr/lib/systemd/system/{{ postgresql_service }}.service"
+    replace: "Environment=PGDATA={{ postgresql_data }}"
+    regexp: ^#?Environment=PGDATA=.*$
+  tags:
+    - postgresql::install

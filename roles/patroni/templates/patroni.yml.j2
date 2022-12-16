@@ -1,0 +1,86 @@
+scope: "{{ patroni_postgresql_version }}-{{ patroni_cluster_name }}"
+name: {{ ansible_hostname }}
+
+restapi:
+  listen: {{ patroni_hostname_ip }}:{{ patroni_restapi_port }}
+  connect_address: {{ patroni_hostname_ip }}:{{ patroni_restapi_port }}
+
+etcd:
+  hosts: {{ patroni_etcd_hosts|join(',') }}
+
+bootstrap:
+  dcs:
+    ttl: {{ patroni_ttl |d(30, true) |int }}
+    loop_wait: {{ patroni_loop_wait |d(10, true) |int }}
+    retry_timeout: {{ patroni_retry_timeout |d(10, true) |int }}
+    maximum_lag_on_failover: {{ patroni_maximum_lag_on_failover |d(1048576, true) |int }}
+    master_start_timeout: {{ patroni_master_start_timeout |d(300, true) |int }}
+    synchronous_mode: {{ patroni_synchronous_mode |string |d(false, true) |lower }}
+    synchronous_mode_strict: {{ patroni_synchronous_mode_strict |string |d(false, true) |lower }}
+    synchronous_node_count: {{ patroni_synchronous_node_count |d(1, true) |int }}
+    postgresql:
+      use_pg_rewind: {{ patroni_use_pg_rewind }}
+      use_slots: {{ patroni_use_slots }}
+      parameters:
+{% for key, value in (__patroni_parameters|combine(patroni_parameters)).items() %}
+      {{ key }}: "{{ value }}"
+{% endfor %}
+
+  initdb:
+  - encoding: {{ patroni_encoding }}
+  - locale: {{ patroni_locale }}
+  - data-checksums
+
+  pg_hba:
+  - local all all                               trust
+  - host  all all                  127.0.0.1/32 md5
+  - host  all all                  0.0.0.0/0    md5
+  - local replication  all                      trust
+  - host  replication  all         127.0.0.1/32 md5
+  - host  replication  replication 0.0.0.0/0    md5
+  users:
+   replication:
+      password: {{ patroni_replication_password }}
+      options:
+        - replication
+
+postgresql:
+  listen: "{{ patroni_postgresql_listen }},127.0.0.1:{{ patroni_postgres_port }}"
+  connect_address: {{ patroni_hostname_ip }}:{{ patroni_postgres_port }}
+  data_dir: {{ patroni_postgresql_data }}
+  bin_dir: {{ patroni_postgresql_bin }}
+  use_unix_socket: true
+  pgpass: /tmp/.pgpass_patroni
+  authentication:
+    replication:
+      username: replication
+      password: {{ patroni_replication_password }}
+    superuser:
+      username: postgres
+      password: {{ patroni_postgres_password }}
+  parameters:
+    unix_socket_directories: {{ patroni_postgresql_unix_socket_dir }}
+  create_replica_methods:
+        - basebackup
+  basebackup:
+        max-rate: 100M
+        checkpoint: fast
+  remove_data_directory_on_rewind_failure: {{ patroni_use_pg_rewind }}
+  remove_data_directory_on_diverged_timelines: {{ patroni_use_slots }}
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: false
+    nosync: false
+log:
+  dateformat: '%Y-%m-%d %H:%M:%S'
+  dir: /var/log/patroni
+  file_num: 4
+  file_size: 25000000
+  format: '%(asctime)s %(levelname)s: %(message)s'
+  level: INFO
+  loggers:
+    patroni.postmaster: INFO
+    urllib3: INFO
+  max_queue_size: 1000
+  traceback_level: ERROR
