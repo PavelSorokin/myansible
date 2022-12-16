@@ -1,4 +1,3 @@
-
 - name: generate postgresql.auto.conf file
   template:
     src: postgresql.auto.conf.j2

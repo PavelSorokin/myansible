@@ -1,39 +1,68 @@
 ---
-postgresql_version: 12
-postgresql_postgres_password: vault_pass_postgres
-postgresql_add_repo: true # Добавление репы из официального репозитория true or false
-postgresql_cluster: false
-postgresql_port: "5432"
+postgresql_version: 14
 
-postgresql_data: "/var/lib/postgresql/{{ postgresql_version }}"
+postgresql_add_repo: false # Добавление репы из официального репозитория true or false
+postgresql_cluster: false  # Установка patroni
+
+postgresql_port: 5432
+postgresql_listen: 0.0.0.0
+postgresql_hostname_ip: "{{ ansible_default_ipv4.address }}"
+
+postgresql_data_dir: "/data"
+postgresql_data: "{{ postgresql_data_dir }}/{{ postgresql_version }}"
 postgresql_log: "/var/log/postgresql/postgresql-{{ postgresql_version }}.log"
+
+postgresql_patroni_config_dir: "/etc/patroni"
+postgresql_patroni_version: "2.1*"
+postgresql_patroni_cluster_name: "cluster"
+# Необходимо определить в Groupvars через vault
+postgresql_postgres_password: vault_pass_postgres
+postgresql_replication_password: vault_pass
+
+# Параметры которые идут в config.yml для patroni
+postgresql_restapi_port: 8008
+postgresql_ttl: 30
+postgresql_loop_wait: 10
+postgresql_retry_timeout: 10
+postgresql_maximum_lag_on_failover: 1048576
+postgresql_master_start_timeout: 300
+postgresql_synchronous_mode: false  # or 'true' for enable synchronous database replication
+postgresql_synchronous_mode_strict: false  # if 'true' then block all client writes to the master, when a synchronous replica is not available
+postgresql_synchronous_node_count: 1  # number of synchronous standby databases
+postgresql_use_pg_rewind: true
+postgresql_use_slots: true
+postgresql_encoding: UTF8
+postgresql_locale: ru_RU.UTF-8 #en_US.UTF-8 #ru_RU.UTF-8
 
 postgresql_parameters: {}
 # example:
 #postgresql_parameters:
 #   max_connections: 122
 #   another_parameter: another_value
+postgresql_patroni_etcd_hosts: {}
+# Необходимо определить в Groupvars для patroni
+#  - IP-node1:2379
+#  - IP-node2:2379
+#  - IP-node3:2379
+postgresql_pg_hba: {}
+# Обязательный темплейт ниже, необходимо определить в Groupvars
+#  - {type: "local", database: "all", user: "all", address: "", method: "trust"}
+#  - {type: "host", database: "all", user: "all", address: "127.0.0.1/32", method: "trust"}
+#  - {type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
+#  - {type: "local", database: "replication", user: "all", address: "", method: "trust"}
 
-postgresql_global_conf:
- - {option: "listen_addresses", value: "*"}
- - {option: "port", value: "{{ postgresql_port }}"}
-
-postgresql_pg_hba:
- - {type: "local", database: "all", user: "all", address: "", method: "trust"}
- - {type: "host", database: "all", user: "all", address: "127.0.0.1/32", method: "trust"}
- - {type: "host", database: "all", user: "all", address: "all", method: "md5"}
-
-postgresql_extensions:
- - {ext: "pg_stat_statements", db: "postgres", state: "present"}
- - {ext: "pg_stat_statements", db: "template1", state: "present"}
- - {ext: "pg_buffercache", db: "template1", state: "present"}
- - {ext: "pgrowlocks", db: "template1", state: "present"}
- - {ext: "pgstattuple", db: "template1", state: "present"}
- - {ext: "dblink", db: "template1", state: "present"}
+postgresql_extensions: {}
+# Обязательный темплейт ниже, необходимо определить в Groupvars
+#  - {ext: "pg_stat_statements", db: "postgres", state: "present"}
+#  - {ext: "pg_stat_statements", db: "template1", state: "present"}
+#  - {ext: "pg_buffercache", db: "template1", state: "present"}
+#  - {ext: "pgrowlocks", db: "template1", state: "present"}
+#  - {ext: "pgstattuple", db: "template1", state: "present"}
+#  - {ext: "dblink", db: "template1", state: "present"}
 
 postgresql_users: {}
 # - { user: "postgres", pass: "{{ postgresql_postgres_password }}", flag: "SUPERUSER", state: "present"}
-# - { user: "repuser", pass: "vault_pass_rep", flag: "LOGIN,REPLICATION", state: "present"}
+# - { user: "replication", pass: "{{ postgresql_replication_password }}", flag: "LOGIN,REPLICATION", state: "present"}
 # - { user: "app", pass: "vault_pass_app", flag: "LOGIN,CREATEDB,CREATEROLE", state: "present"}
 
 postgresql_members: {}
@@ -42,38 +71,3 @@ postgresql_members: {}
 
 postgresql_db: {}
 # - {db: "app", owner: "postgres", state: "present"}
-
-patroni_config_dir: "/etc/patroni"
-patroni_version: "2.1*"
-patroni_postgresql_version: 13
-patroni_cluster_name: "cluster"
-patroni_postgresql_data_dir: "/data"
-patroni_postgresql_data: "{{ patroni_postgresql_data_dir }}/{{ patroni_postgresql_version }}"
-patroni_postgres_port: 5432
-patroni_postgresql_listen: 0.0.0.0
-patroni_replication_password: vault_pass
-patroni_postgres_password: vault_pass2
-patroni_hostname_ip: "{{ ansible_default_ipv4.address }}"
-patroni_etcd_hosts:
-  - 127.0.0.1:2379
-patroni_restapi_port: 8008
-
-patroni_ttl: 30
-patroni_loop_wait: 10
-patroni_retry_timeout: 10
-patroni_maximum_lag_on_failover: 1048576
-patroni_master_start_timeout: 300
-patroni_synchronous_mode: false  # or 'true' for enable synchronous database replication
-patroni_synchronous_mode_strict: false  # if 'true' then block all client writes to the master, when a synchronous replica is not available
-patroni_synchronous_node_count: 1  # number of synchronous standby databases
-patroni_use_pg_rewind: true
-patroni_use_slots: true
-
-patroni_encoding: UTF8
-patroni_locale: ru_RU.UTF-8 #en_US.UTF-8 #ru_RU.UTF-8
-
-patroni_parameters: {}
-# example:
-# patroni_parameters:
-#   max_connections: 122
-#   another_parameter: another_value

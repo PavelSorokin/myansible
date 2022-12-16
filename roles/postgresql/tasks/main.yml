@@ -8,33 +8,36 @@
   - postgresql::start
   - postgresql::ext
   - postgresql::user
-  - postgresql::ext
-
-- name: include vars
-  include_vars: "main.yml"
+  - postgresql::db
+  - patroni::install
+  - patroni::start
+  - patroni::patroni-check
+  - patroni::patroni-status
 
 - name: include vars postgresql-conf.yaml
   include_vars: "postgresql-conf.yaml"
   tags:
   - postgresql::conf
+  - postgresql::init
 
 - name: Include postgresql-install instructions {{ ansible_os_family }}
   include_tasks: postgresql/install-{{ ansible_os_family }}.yml ## Debian RedHat
   tags:
   - postgresql::install
 
-- block:
-  - name: Include patroni-install instructions
-    include_tasks: patroni/patroni-install.yml
-    tags:
-    - patroni::install
-    - patroni::start
+- name: Include patroni-install instructions
+  include_tasks: patroni/patroni-install.yml
+  tags:
+  - patroni::install
+  - patroni::start
+  when:
+  - postgresql_cluster
 
-  - name: Include patroni-check instructions
-    include_tasks: patroni/patroni-check.yml
-    tags:
-    - patroni::patroni-check
-    - patroni::patroni-status
+- name: Include patroni-check instructions
+  include_tasks: patroni/patroni-check.yml
+  tags:
+  - patroni::patroni-check
+  - patroni::patroni-status
   when:
   - postgresql_cluster
 
@@ -67,12 +70,12 @@
   tags:
   - postgresql::user
 
-- name: Include EXT instructions
+- name: Include postgresql-ext instructions
   include_tasks: postgresql/postgresql-ext.yml
   tags:
   - postgresql::ext
 
-- name: Include DB instructions
+- name: Include postgresql-db instructions
   include_tasks: postgresql/postgresql-db.yml
   tags:
   - postgresql::db

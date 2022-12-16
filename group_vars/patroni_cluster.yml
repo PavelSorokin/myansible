@@ -5,25 +5,37 @@ etcd_init_cluster:
   - { ip: "172.28.128.6", host: "willion-ubuntu-db3" }
 
 etcd_hostname_ip: "{{ ansible_eth1.ipv4.address }}"  
-patroni_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
+postgresql_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
 
-patroni_etcd_hosts:
+postgresql_cluster: false
+postgresql_add_repo: true
+postgresql_etcd_hosts:
   - 172.28.128.4:2379
   - 172.28.128.5:2379
   - 172.28.128.6:2379
 
 postgresql_version: 14
-patroni_postgresql_version: 14
+postgresql_patroni_version: "2.1*"
 
+postgresql_patroni_cluster_name: patroni_test
+
+postgresql_replication_password: my_pass_replication
 postgresql_postgres_password: my_pass
-postgresql_add_repo: false
 
-patroni_cluster_name: patroni_test
-
-patroni_replication_password: my_pass_replication
-patroni_postgres_password: my_pass
-
-
-patroni_postgresql_data_dir: /data
-patroni_encoding: UTF8
-patroni_locale: ru_RU.UTF-8
+postgresql_data_dir: /data
+postgresql_encoding: UTF8
+postgresql_locale: ru_RU.UTF-8
+postgresql_parameters:
+  wal_keep_size: '256MB'
+  min_wal_size: '128MB'
+  max_wal_size: '1GB'
+postgresql_pg_hba:
+ - {type: "local", database: "all", user: "all", address: "", method: "trust"}
+ - {type: "host", database: "all", user: "all", address: "127.0.0.1/32", method: "trust"}
+ - {type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
+ - {type: "local", database: "replication", user: "all", address: "", method: "trust"}
+ - {type: "host", database: "replication", user: "all", address: "127.0.0.1/32", method: "trust"}
+ - {type: "host", database: "replication", user: "all", address: "172.28.128.4/32", method: "md5"}
+ - {type: "host", database: "replication", user: "all", address: "172.28.128.5/32", method: "md5"}
+ - {type: "host", database: "replication", user: "all", address: "172.28.128.6/32", method: "md5"}
+ 

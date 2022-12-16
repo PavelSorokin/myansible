@@ -1,6 +1,6 @@
 - name: check create {{ postgresql_data }}
   stat: path={{ postgresql_data }}
-  register: postgresql_data_dir
+  register: check_postgresql_data_dir
   changed_when: false
   tags:
     - postgresql::init
@@ -26,7 +26,7 @@
 
     - name: configure global postgresql.conf settings
       lineinfile:
-        dest: "{{ postgresql_conf }}/postgresql.conf"
+        dest: "{{ __postgresql_global_conf }}/postgresql.conf"
         regexp: "^#?{{ item.option }}.+$"
         line: "{{ item.option }} = '{{ item.value }}'"
         state: "{{ item.state | default('present') }}"
@@ -35,7 +35,7 @@
       notify: start postgresql
   when:
     - ansible_os_family == "Debian"
-    - postgresql_data_dir.stat.exists == false
+    - check_postgresql_data_dir.stat.exists == false
   tags:
     - postgresql::init
 

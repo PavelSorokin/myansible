@@ -1,21 +1,21 @@
 - name: Prepare PostgreSQL | check PostgreSQL is started
   become: true
   become_user: postgres
-  command: "{{ patroni_postgresql_bin }}/pg_isready -p {{ patroni_postgres_port }}"
+  command: "{{ postgresql_bin }}/pg_isready -p {{ postgresql_port }}"
   register: pg_isready_result
   until: pg_isready_result.rc == 0
   retries: 30
   delay: 10
   changed_when: false
   tags:
-  - patroni::patroni-check
+    - patroni::patroni-check
 
 - block:
     - name: Check postgresql cluster health
       run_once: true
       become: true
       become_user: postgres
-      command: "patronictl -c {{ patroni_config_dir }}/config.yml list"
+      command: "patronictl -c {{ postgresql_patroni_config_dir }}/config.yml list"
       register: patronictl_result
       environment:
         PATH: "/usr/bin:/usr/local/bin"
@@ -27,4 +27,4 @@
         var: patronictl_result.stdout_lines
   ignore_errors: true
   tags:
-  - patroni::patroni-status
+    - patroni::patroni-status

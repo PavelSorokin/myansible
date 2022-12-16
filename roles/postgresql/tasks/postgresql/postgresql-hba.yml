@@ -9,8 +9,6 @@
     notify: reload postgresql
     when:
       - ansible_os_family == "Debian"
-    tags:
-      - postgresql::hba
 
   - name: generate pg_hba.conf
     template:
@@ -22,10 +20,10 @@
     notify: reload postgresql
     when:
       - ansible_os_family == "RedHat"
-    tags:
-      - postgresql::hba
   when:
-  - not postgresql_cluster
+    - not postgresql_cluster
+  tags:
+    - postgresql::hba
 
 - name: generate pg_hba.conf
   template:
@@ -34,8 +32,8 @@
     owner: postgres
     group: postgres
     mode: 0640
- # notify: reload postgresql
+  notify: reload patroni hba
   when:
-  - postgresql_cluster
+    - postgresql_cluster
   tags:
     - postgresql::hba

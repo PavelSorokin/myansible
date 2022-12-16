@@ -30,3 +30,11 @@
     state: reloaded
     enabled: true
     daemon_reload: true
+
+- name: reload patroni hba
+  become: true
+  become_user: postgres
+  command: "{{ postgresql_bin }}/psql -p {{ postgresql_port }} -c 'SELECT pg_reload_conf()'"
+  register: psql_reload_result
+  changed_when: psql_reload_result.rc == 0
+  failed_when: false
