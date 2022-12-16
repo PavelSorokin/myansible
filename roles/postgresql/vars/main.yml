@@ -77,4 +77,3 @@ __patroni_parameters:
     wal_log_hints: "on"
     wal_receiver_status_interval: 10s
     work_mem: 32MB
-    

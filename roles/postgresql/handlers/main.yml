@@ -16,3 +16,17 @@
     state: reloaded
     enabled: yes
     daemon_reload: yes
+
+- name: restart patroni
+  systemd:
+    name: patroni
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: reload patroni
+  systemd:
+    name: patroni
+    state: reloaded
+    enabled: true
+    daemon_reload: true

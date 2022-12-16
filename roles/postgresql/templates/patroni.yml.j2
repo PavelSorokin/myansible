@@ -23,7 +23,7 @@ bootstrap:
       use_slots: {{ patroni_use_slots }}
       parameters:
 {% for key, value in (__patroni_parameters|combine(patroni_parameters)).items() %}
-      {{ key }}: "{{ value }}"
+        {{ key }}: "{{ value }}"
 {% endfor %}
 
   initdb:

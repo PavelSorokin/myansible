@@ -4,10 +4,8 @@
   become_method: sudo
 
   roles:
+  - role: etcd
+    tags: etcd
   - role: postgresql
-  # - role: etcd
-  #   tags: etcd
-  # - role: postgresql
-  #   tags: postgresql::install
-  # - role: patroni
-  #   tags: patroni::install
+    tags: postgresql
+

@@ -5,7 +5,7 @@
     cache_valid_time: 3600
   tags:
   - patroni::install
-  
+
 - name: create log directory patroni
   file:
     path: /var/log/patroni
@@ -31,8 +31,6 @@
     owner: postgres
     group: postgres
     mode: 0700
-  when:
-    - check_patroni_postgresql_data_dir.stat.exists == False
   tags:
   - patroni::install
 
