@@ -11,13 +11,8 @@ postgresql_packages:
 
 postgresql_yum_repo_url: "https://download.postgresql.org/pub/repos/yum/reporpms/{{ 'F' if ansible_distribution|lower == 'fedora' else 'EL' }}-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat-repo-latest.noarch.rpm"
 
-postgresql_bin_debian: "/usr/lib/postgresql/{{ postgresql_version }}/bin"
-postgresql_bin_redhat: "/usr/pgsql-{{ postgresql_version }}/bin"
-postgresql_bin: "{{ postgresql_bin_debian if ansible_os_family == 'Debian' else postgresql_bin_redhat }}"
+postgresql_bin: "/usr/pgsql-{{ postgresql_version }}/bin"
 postgresql_unix_socket_dir: "/var/run/postgresql"
-postgresql_conf_debian: "/etc/postgresql/{{ postgresql_version }}/main"
-postgresql_conf: "{{ postgresql_conf_debian if ansible_os_family == 'Debian' else  postgresql_data }}"
+postgresql_conf: "{{ postgresql_data }}"
 
-postgtresql_service_debian: "postgresql@{{ postgresql_version }}-main"
-postgtresql_service_redhat: "postgresql-{{ postgresql_version }}"
-postgresql_service: "{{ postgtresql_service_debian if ansible_os_family == 'Debian' else postgtresql_service_redhat }}"
+postgresql_service: "postgresql-{{ postgresql_version }}"

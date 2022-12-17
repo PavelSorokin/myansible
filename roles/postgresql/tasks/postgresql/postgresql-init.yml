@@ -1,5 +1,6 @@
 - name: check create {{ postgresql_data }}
-  stat: path={{ postgresql_data }}
+  stat:
+    path: "{{ postgresql_data }}"
   register: check_postgresql_data_dir
   changed_when: false
   tags:
@@ -18,20 +19,25 @@
 
 # Init for Debian
 - block:
+    - name: ensure a locale exists
+      locale_gen:
+        name: "{{ postgresql_locale }}"
+        state: present
+
     - name: initdb postgresql {{ postgresql_version }}
-      command: "/usr/bin/pg_createcluster -d {{ postgresql_data }} -s {{ postgresql_unix_socket_dir }} -l {{ postgresql_log }} -p {{ postgresql_port }} {{ postgresql_version }} main"
+      command: "/usr/bin/pg_createcluster -d {{ postgresql_data }} -s {{ postgresql_unix_socket_dir }} -l {{ postgresql_log }} -p {{ postgresql_port }} --locale {{ postgresql_locale }} {{ postgresql_version }} main"
       args:
         chdir: "{{ postgresql_data }}/"
         creates: PG_VERSION
 
     - name: configure global postgresql.conf settings
       lineinfile:
-        dest: "{{ __postgresql_global_conf }}/postgresql.conf"
+        dest: "{{ postgresql_conf }}/postgresql.conf"
         regexp: "^#?{{ item.option }}.+$"
         line: "{{ item.option }} = '{{ item.value }}'"
         state: "{{ item.state | default('present') }}"
         mode: 0644
-      with_items: "{{ postgresql_global_conf }}"
+      with_items: "{{ __postgresql_global_conf }}"
       notify: start postgresql
   when:
     - ansible_os_family == "Debian"
@@ -47,15 +53,10 @@
         enabled: no
         daemon_reload: yes
 
-    - name: remove directory
-      file:
-        path: "/var/lib/pgsql/{{ postgresql_version }}"
-        state: absent
-
     - name: initdb postgresql {{ postgresql_version }}
       become: true
       become_user: postgres
-      command: "{{ postgresql_bin }}/initdb -D {{ postgresql_data }} -k"
+      command: "{{ postgresql_bin }}/initdb -D {{ postgresql_data }} --locale {{ postgresql_locale }} -k"
       args:
         chdir: "{{ postgresql_data }}/"
         creates: PG_VERSION
@@ -67,10 +68,10 @@
         line: "{{ item.option }} = '{{ item.value }}'"
         state: "{{ item.state | default('present') }}"
         mode: 0644
-      with_items: "{{ postgresql_global_conf }}"
+      with_items: "{{ __postgresql_global_conf }}"
       notify: start postgresql
   when:
     - ansible_os_family == "RedHat"
-    - postgresql_data_dir.stat.exists == false
+    - check_postgresql_data_dir.stat.exists == false
   tags:
     - postgresql::init

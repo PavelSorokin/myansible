@@ -4,8 +4,18 @@
   become_method: sudo
 
   roles:
-  # - role: etcd
-  #   tags: etcd
+  - role: etcd
+    tags: etcd
   - role: postgresql
     tags: postgresql
 
+# - hosts: centos_patroni_cluster
+#   gather_facts: yes
+#   become: true
+#   become_method: sudo
+
+#   roles:
+#   - role: etcd
+#     tags: etcd
+#   - role: postgresql
+#     tags: postgresql

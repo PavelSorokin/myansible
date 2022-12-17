@@ -10,8 +10,6 @@
   - postgresql::user
   - postgresql::db
   - patroni::install
-  - patroni::start
-  - patroni::patroni-check
   - patroni::patroni-status
 
 - name: include vars postgresql-conf.yaml
@@ -19,6 +17,7 @@
   tags:
   - postgresql::conf
   - postgresql::init
+  - patroni::install
 
 - name: Include postgresql-install instructions {{ ansible_os_family }}
   include_tasks: postgresql/install-{{ ansible_os_family }}.yml ## Debian RedHat
@@ -29,14 +28,12 @@
   include_tasks: patroni/patroni-install.yml
   tags:
   - patroni::install
-  - patroni::start
   when:
   - postgresql_cluster
 
 - name: Include patroni-check instructions
   include_tasks: patroni/patroni-check.yml
   tags:
-  - patroni::patroni-check
   - patroni::patroni-status
   when:
   - postgresql_cluster

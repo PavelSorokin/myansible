@@ -1,22 +1,22 @@
 etcd_cluster_token: test_patroni
 etcd_init_cluster:
-  - { ip: "172.28.128.4", host: "willion-ubuntu-db1" } 
-  - { ip: "172.28.128.5", host: "willion-ubuntu-db2" }
-  - { ip: "172.28.128.6", host: "willion-ubuntu-db3" }
+  - { ip: "172.28.128.7", host: "willion-centos-db1" } 
+  - { ip: "172.28.128.8", host: "willion-centos-db2" }
+  - { ip: "172.28.128.9", host: "willion-centos-db3" }
 
 etcd_hostname_ip: "{{ ansible_eth1.ipv4.address }}"  
 postgresql_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
 
-postgresql_cluster: true
+postgresql_cluster: false
 postgresql_add_repo: true
 postgresql_etcd_hosts:
-  - 172.28.128.4:2379
-  - 172.28.128.5:2379
-  - 172.28.128.6:2379
+  - 172.28.128.7:2379
+  - 172.28.128.8:2379
+  - 172.28.128.9:2379
 
-postgresql_version: 14
-postgresql_port: 5432
-postgresql_patroni_version: "2.1*"
+postgresql_version: 13
+postgresql_port: 6432
+postgresql_patroni_version: "2.1.4*"
 
 postgresql_patroni_cluster_name: patroni_test
 
@@ -25,7 +25,7 @@ postgresql_postgres_password: my_pass
 
 postgresql_data_dir: /data
 postgresql_encoding: UTF8
-postgresql_locale: ru_RU.UTF-8
+postgresql_locale: en_US.UTF-8 #ru_RU.UTF-8
 postgresql_parameters:
   wal_keep_size: '256MB'
   min_wal_size: '128MB'
