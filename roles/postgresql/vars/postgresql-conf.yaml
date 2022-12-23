@@ -76,3 +76,11 @@ __postgresql_parameters:
  wal_log_hints: "on"
  wal_receiver_status_interval: 10s
  work_mem: 32MB
+
+__postgresql_extensions:
+ - {ext: "pg_stat_statements", db: "postgres", state: "present"}
+ - {ext: "pg_stat_statements", db: "template1", state: "present"}
+ - {ext: "pg_buffercache", db: "template1", state: "present"}
+ - {ext: "pgrowlocks", db: "template1", state: "present"}
+ - {ext: "pgstattuple", db: "template1", state: "present"}
+ - {ext: "dblink", db: "template1", state: "present"}

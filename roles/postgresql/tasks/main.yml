@@ -6,9 +6,9 @@
   - postgresql::hba
   - postgresql::conf
   - postgresql::start
-  - postgresql::ext
   - postgresql::user
   - postgresql::db
+  - postgresql::ext
   - patroni::install
   - patroni::patroni-status
 
@@ -35,6 +35,7 @@
   include_tasks: patroni/patroni-install.yml
   tags:
   - patroni::install
+  - patroni::start
   when:
   - postgresql_cluster
 
@@ -74,12 +75,12 @@
   tags:
   - postgresql::user
 
-- name: Include postgresql-ext instructions
-  include_tasks: postgresql/postgresql-ext.yml
-  tags:
-  - postgresql::ext
-
 - name: Include postgresql-db instructions
   include_tasks: postgresql/postgresql-db.yml
   tags:
   - postgresql::db
+
+- name: Include postgresql-ext instructions
+  include_tasks: postgresql/postgresql-ext.yml
+  tags:
+  - postgresql::ext

@@ -34,7 +34,7 @@ postgresql_synchronous_node_count: 1  # number of synchronous standby databases
 postgresql_use_pg_rewind: true
 postgresql_use_slots: true
 postgresql_encoding: UTF8
-postgresql_locale: en_US.UTF-8 #en_US.UTF-8 #ru_RU.UTF-8 Для Debian работает добавление локалей, для RadHat нет(точнее нада добалять, модуль ansible.locale в редахат не работает)
+postgresql_locale: en_US.UTF-8 #en_US.UTF-8 #ru_RU.UTF-8 Для Debian работает добавление локалей, для RedHat нет(точнее нада добалять, модуль ansible.locale в редахат не работает)
 
 postgresql_parameters: {}
 # example:
@@ -48,19 +48,14 @@ postgresql_patroni_etcd_hosts: {}
 #  - IP-node3:2379
 postgresql_pg_hba: {}
 # Обязательный темплейт ниже, необходимо определить в Groupvars
+# Необходимо дополнить своими правилами
 #  - {type: "local", database: "all", user: "all", address: "", method: "trust"}
 #  - {type: "host", database: "all", user: "all", address: "127.0.0.1/32", method: "trust"}
 #  - {type: "host", database: "all", user: "all", address: "0.0.0.0/0", method: "md5"}
 #  - {type: "local", database: "replication", user: "all", address: "", method: "trust"}
 
 postgresql_extensions: {}
-# Обязательный темплейт ниже, необходимо определить в Groupvars
-#  - {ext: "pg_stat_statements", db: "postgres", state: "present"}
-#  - {ext: "pg_stat_statements", db: "template1", state: "present"}
-#  - {ext: "pg_buffercache", db: "template1", state: "present"}
-#  - {ext: "pgrowlocks", db: "template1", state: "present"}
-#  - {ext: "pgstattuple", db: "template1", state: "present"}
-#  - {ext: "dblink", db: "template1", state: "present"}
+#  - {ext: "timescaledb", db: "zabbix", state: "present"}
 
 postgresql_users: {}
 # - { user: "postgres", pass: "{{ postgresql_postgres_password }}", flag: "SUPERUSER", state: "present"}
