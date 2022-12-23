@@ -24,6 +24,13 @@
   tags:
   - postgresql::install
 
+- name: Include extension timescaledb instructions {{ ansible_os_family }}
+  include_tasks: extension/timescaledb.yml
+  when:
+  - postgresql_timescaledb_install
+  tags:
+  - postgresql::timescaledb
+
 - name: Include patroni-install instructions
   include_tasks: patroni/patroni-install.yml
   tags:

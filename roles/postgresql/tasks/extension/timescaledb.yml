@@ -1,0 +1,52 @@
+- block:
+    - name: add timescaledb repository apt-key
+      apt_key:
+        url: "{{ item }}"
+        state: present
+      with_items: "{{ postgresql_timescaledb_repo_keys }}"
+
+    - name: add timescaledb repository
+      apt_repository:
+        repo: "{{ item }}"
+        filename: "{{ postgresql_timescaledb_filename }}"
+        state: present
+        update_cache: true
+      with_items: "{{ postgresql_timescaledb_repo }}"
+  when:
+    - postgresql_timescaledb_repo | length > 0
+    - ansible_os_family == "Debian"
+    - not postgresql_timescaledb_install_scp
+  tags:
+    - postgresql::timscaledb
+
+- block:
+    - name: timescaledb download repo sh
+      get_url:
+        url: "https://packagecloud.io/install/repositories/timescale/timescaledb/script.deb.sh"
+        dest: "/tmp/script.deb.sh"
+        mode: '0777'
+        remote_src: yes
+        validate_certs: False
+
+    - name: timescaledb install repo sh
+      become: true
+      command: "/tmp/script.deb.sh"
+      args:
+        chdir: /etc/apt/sources.list.d/
+        creates: timescale_timescaledb.list
+  when:
+    - postgresql_timescaledb_install_scp
+    - ansible_os_family == "Debian"
+  tags:
+    - postgresql::timscaledb
+
+- name: timescaledb install | establish dependencies
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ postgresql_timescaledb_pkg }}"
+  when:
+    - ansible_os_family == "Debian"
+  tags:
+    - postgresql::timscaledb

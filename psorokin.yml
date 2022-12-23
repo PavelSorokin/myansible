@@ -4,8 +4,8 @@
   become_method: sudo
 
   roles:
-  - role: etcd
-    tags: etcd
+  # - role: etcd
+  #   tags: etcd
   - role: postgresql
     tags: postgresql
 

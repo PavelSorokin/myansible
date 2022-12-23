@@ -7,12 +7,13 @@ postgresql_packages:
   - "{{ __psycopg2 }}"
   - gcc
   - jq
+  - gnupg2
 
 postgresql_apt_repository_keys:
   - key: "http://www.postgresql.org/media/keys/ACCC4CF8.asc"  # postgresql repository apt key
 postgresql_apt_repository:
   - repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
-postgresql_apt_filename: "postgresql.list"
+postgresql_apt_filename: "postgresql"
 
 postgresql_unix_socket_dir: "/var/run/postgresql"
 

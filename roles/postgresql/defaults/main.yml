@@ -73,3 +73,10 @@ postgresql_members: {}
 
 postgresql_db: {}
 # - {db: "app", owner: "postgres", state: "present"}
+postgresql_timescaledb_install: false
+postgresql_timescaledb_install_scp: false
+postgresql_timescaledb_repo_keys: "https://packagecloud.io/timescale/timescaledb/gpgkey"
+postgresql_timescaledb_repo: "deb https://packagecloud.io/timescale/timescaledb/debian/ {{ ansible_distribution_release }} main"
+postgresql_timescaledb_filename: "timescaledb"
+postgresql_timescaledb_pkg:
+  - timescaledb-2-postgresql-{{ postgresql_version }}

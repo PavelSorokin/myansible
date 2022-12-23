@@ -7,7 +7,7 @@ etcd_init_cluster:
 etcd_hostname_ip: "{{ ansible_eth1.ipv4.address }}"  
 postgresql_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
 
-postgresql_cluster: true
+postgresql_cluster: false
 postgresql_add_repo: true
 postgresql_etcd_hosts:
   - 172.28.128.4:2379
@@ -25,11 +25,12 @@ postgresql_postgres_password: my_pass
 
 postgresql_data_dir: /data
 postgresql_encoding: UTF8
-postgresql_locale: ru_RU.UTF-8
+postgresql_locale: en_US.UTF-8
 postgresql_parameters:
   wal_keep_size: '256MB'
   min_wal_size: '128MB'
   max_wal_size: '1GB'
+  shared_preload_libraries: pg_stat_statements,auto_explain,timescaledb
 
 postgresql_pg_hba:
  - {type: "local", database: "all", user: "all", address: "", method: "trust"}
@@ -49,3 +50,11 @@ postgresql_extensions:
  - {ext: "pgrowlocks", db: "template1", state: "present"}
  - {ext: "pgstattuple", db: "template1", state: "present"}
  - {ext: "dblink", db: "template1", state: "present"}
+ - {ext: "timescaledb", db: "zabbix", state: "present"}
+postgresql_users:
+ - { user: "zabbix", pass: "zabbix", flag: "LOGIN,CREATEDB,CREATEROLE", state: "present"}
+postgresql_db: 
+ - {db: "zabbix", owner: "zabbix", state: "present"}
+
+postgresql_timescaledb_install: true
+postgresql_timescaledb_install_scp: true
