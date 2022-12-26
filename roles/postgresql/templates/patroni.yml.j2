@@ -1,23 +1,24 @@
+# {{ ansible_managed }}
 scope: "{{ postgresql_version }}-{{ postgresql_patroni_cluster_name }}"
 name: {{ ansible_hostname }}
 
 restapi:
-  listen: {{ postgresql_hostname_ip }}:{{ postgresql_restapi_port }}
-  connect_address: {{ postgresql_hostname_ip }}:{{ postgresql_restapi_port }}
+  listen: {{ postgresql_ip }}:{{ postgresql_restapi_port }}
+  connect_address: {{ postgresql_ip }}:{{ postgresql_restapi_port }}
 
 etcd:
   hosts: {{ postgresql_etcd_hosts|join(',') }}
 
 bootstrap:
   dcs:
-    ttl: {{ postgresql_ttl |d(30, true) |int }}
-    loop_wait: {{ postgresql_loop_wait |d(10, true) |int }}
-    retry_timeout: {{ postgresql_retry_timeout |d(10, true) |int }}
-    maximum_lag_on_failover: {{ postgresql_maximum_lag_on_failover |d(1048576, true) |int }}
-    master_start_timeout: {{ postgresql_master_start_timeout |d(300, true) |int }}
-    synchronous_mode: {{ postgresql_synchronous_mode |string |d(false, true) |lower }}
-    synchronous_mode_strict: {{ postgresql_synchronous_mode_strict |string |d(false, true) |lower }}
-    synchronous_node_count: {{ postgresql_synchronous_node_count |d(1, true) |int }}
+    ttl: {{ postgresql_ttl }}
+    loop_wait: {{ postgresql_loop_wait }}
+    retry_timeout: {{ postgresql_retry_timeout }}
+    maximum_lag_on_failover: {{ postgresql_maximum_lag_on_failover }}
+    master_start_timeout: {{ postgresql_master_start_timeout }}
+    synchronous_mode: {{ postgresql_synchronous_mode }}
+    synchronous_mode_strict: {{ postgresql_synchronous_mode_strict }}
+    synchronous_node_count: {{ postgresql_synchronous_node_count }}
     postgresql:
       use_pg_rewind: {{ postgresql_use_pg_rewind }}
       use_slots: {{ postgresql_use_slots }}
@@ -27,17 +28,17 @@ bootstrap:
 {% endfor %}
 
   initdb:
-  - encoding: {{ postgresql_encoding }}
-  - locale: {{ postgresql_locale }}
-  - data-checksums
+    - encoding: {{ postgresql_encoding }}
+    - locale: {{ postgresql_locale }}
+    - data-checksums
 
   pg_hba:
-  - local all all                               trust
-  - host  all all                  127.0.0.1/32 md5
-  - host  all all                  0.0.0.0/0    md5
-  - local replication  all                      trust
-  - host  replication  all         127.0.0.1/32 md5
-  - host  replication  replication 0.0.0.0/0    md5
+    - local all all                               trust
+    - host  all all                  127.0.0.1/32 md5
+    - host  all all                  0.0.0.0/0    md5
+    - local replication  all                      trust
+    - host  replication  all         127.0.0.1/32 md5
+    - host  replication  replication 0.0.0.0/0    md5
   users:
    replication:
       password: {{ postgresql_replication_password }}
@@ -46,7 +47,7 @@ bootstrap:
 
 postgresql:
   listen: "{{ postgresql_listen }},127.0.0.1:{{ postgresql_port }}"
-  connect_address: {{ postgresql_hostname_ip }}:{{ postgresql_port }}
+  connect_address: {{ postgresql_ip }}:{{ postgresql_port }}
   data_dir: {{ postgresql_data }}
   bin_dir: {{ postgresql_bin }}
   use_unix_socket: true

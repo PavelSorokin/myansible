@@ -19,6 +19,11 @@
   tags:
     - postgresql::timscaledb
 
+- name: get stats of a script file
+  stat:
+    path: /etc/apt/sources.list.d/timescale_timescaledb.list
+  register: script
+
 - block:
     - name: timescaledb download repo sh
       get_url:
@@ -29,7 +34,6 @@
         validate_certs: False
 
     - name: timescaledb install repo sh
-      become: true
       command: "/tmp/script.deb.sh"
       args:
         chdir: /etc/apt/sources.list.d/
@@ -37,11 +41,11 @@
   when:
     - postgresql_timescaledb_install_scp
     - ansible_os_family == "Debian"
+    - script.stat.exists == false
   tags:
     - postgresql::timscaledb
 
 - name: timescaledb install | establish dependencies
-  become: true
   apt:
     name: "{{ item }}"
     state: present

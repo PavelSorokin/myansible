@@ -62,27 +62,29 @@
     host: 127.0.0.1
     state: started
     timeout: 120
-    delay: 10
+    delay: 1
+    sleep: 5
   ignore_errors: false
   tags:
     - etcd::status
 
-- block:
-    - name: Wait until the etcd cluster is healthy
-      command: /opt/etcd/bin/etcdctl cluster-health
-      environment:
-        ETCDCTL_API: 2
-      register: etcd_health_result
-      run_once: true
-      changed_when: false
-      until: "'cluster is healthy' in etcd_health_result.stdout"
-      retries: 10
-      delay: 10
-      ignore_errors: false
+- name: Wait until the etcd cluster is healthy
+  command: /opt/etcd/bin/etcdctl cluster-health
+  environment:
+    ETCDCTL_API: 2
+  register: etcd_health_result
+  run_once: true
+  changed_when: false
+  until: "'cluster is healthy' in etcd_health_result.stdout"
+  retries: 10
+  delay: 10
+  ignore_errors: false
+  tags:
+    - etcd::status
 
-    - name: cluster health
-      run_once: true
-      debug:
-        var: etcd_health_result.stdout_lines
+- name: cluster health
+  run_once: true
+  debug:
+    var: etcd_health_result.stdout_lines
   tags:
     - etcd::status

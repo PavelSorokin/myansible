@@ -6,9 +6,9 @@ postgresql_cluster: false # Установка patroni
 
 postgresql_port: 5432
 postgresql_listen: 0.0.0.0
-postgresql_hostname_ip: "{{ ansible_default_ipv4.address }}"
-postgresql_defaults_data_dir_redhat: "/var/lib/pgsql-{{ postgresql_version }}" # Не менять
-postgresql_defaults_data_dir_debian: "/var/lib/postgresql"                     # Не менять
+postgresql_ip: "{{ ansible_default_ipv4.address }}"
+postgresql_defaults_data_dir_redhat: "/var/lib/pgsql"       # Не менять
+postgresql_defaults_data_dir_debian: "/var/lib/postgresql"  # Не менять
 
 postgresql_data_dir: "{{ postgresql_defaults_data_dir_debian if ansible_os_family == 'Debian' else postgresql_defaults_data_dir_redhat }}" # Нужно менять
 postgresql_data: "{{ postgresql_data_dir }}/{{ postgresql_version }}"

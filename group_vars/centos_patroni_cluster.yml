@@ -4,8 +4,8 @@ etcd_init_cluster:
   - { ip: "172.28.128.8", host: "willion-centos-db2" }
   - { ip: "172.28.128.9", host: "willion-centos-db3" }
 
-etcd_hostname_ip: "{{ ansible_eth1.ipv4.address }}"  
-postgresql_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
+etcd_ip: "{{ ansible_eth1.ipv4.address }}"  
+postgresql_ip: "{{ ansible_eth1.ipv4.address }}"
 
 postgresql_cluster: false
 postgresql_add_repo: true
@@ -42,10 +42,8 @@ postgresql_pg_hba:
  - {type: "host", database: "replication", user: "all", address: "172.28.128.6/32", method: "md5"}
 
 postgresql_extensions:
-# Обязательный темплейт ниже, необходимо определить в Groupvars
  - {ext: "pg_stat_statements", db: "postgres", state: "present"}
- - {ext: "pg_stat_statements", db: "template1", state: "present"}
- - {ext: "pg_buffercache", db: "template1", state: "present"}
- - {ext: "pgrowlocks", db: "template1", state: "present"}
- - {ext: "pgstattuple", db: "template1", state: "present"}
- - {ext: "dblink", db: "template1", state: "present"}
+postgresql_users:
+ - { user: "zabbix", pass: "zabbix", flag: "LOGIN,CREATEDB,CREATEROLE", state: "present"}
+postgresql_db: 
+ - {db: "zabbix", owner: "zabbix", state: "present"}

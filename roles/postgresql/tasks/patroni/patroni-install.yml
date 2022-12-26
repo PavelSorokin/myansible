@@ -36,7 +36,6 @@
     - patroni::install
 
 - name: create folder postgresql data
-  become_user: root
   file:
     path: "{{ postgresql_data_dir }}"
     state: directory
@@ -56,7 +55,6 @@
     - patroni::install
 
 - name: create folder patroni
-  become_user: root
   file:
     path: "{{ postgresql_patroni_config_dir }}"
     state: directory
@@ -73,6 +71,7 @@
     owner: postgres
     group: postgres
     mode: "0644"
+  notify: reload patroni
   when:
     - ansible_os_family == "Debian"
   tags:
@@ -85,6 +84,7 @@
     owner: postgres
     group: postgres
     mode: "0644"
+  notify: reload patroni
   when:
     - ansible_os_family == "RedHat"
   tags:

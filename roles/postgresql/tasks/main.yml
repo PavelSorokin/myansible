@@ -71,7 +71,7 @@
   - not postgresql_cluster
 
 - name: Include postgresql-usr instructions
-  include_tasks: postgresql/postgresql-usr.yml
+  include_tasks: postgresql/postgresql-users.yml
   tags:
   - postgresql::user
 

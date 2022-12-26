@@ -7,7 +7,6 @@
     - postgresql::init
 
 - name: create folder postgresql data
-  become_user: root
   file:
     path: "{{ postgresql_data }}"
     state: directory
@@ -38,7 +37,7 @@
         state: "{{ item.state | default('present') }}"
         mode: 0644
       with_items: "{{ __postgresql_global_conf }}"
-      notify: start postgresql
+      notify: restart postgresql
   when:
     - ansible_os_family == "Debian"
     - check_postgresql_data_dir.stat.exists == false
@@ -69,7 +68,7 @@
         state: "{{ item.state | default('present') }}"
         mode: 0644
       with_items: "{{ __postgresql_global_conf }}"
-      notify: start postgresql
+      notify: restart postgresql
   when:
     - ansible_os_family == "RedHat"
     - check_postgresql_data_dir.stat.exists == false

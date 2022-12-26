@@ -5,11 +5,6 @@
     enabled: yes
     daemon_reload: yes
 
-- name: start postgresql
-  systemd:
-    name: "{{ postgresql_service }}"
-    state: started
-
 - name: reload postgresql
   systemd:
     name: "{{ postgresql_service }}"

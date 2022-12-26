@@ -4,8 +4,8 @@ etcd_init_cluster:
   - { ip: "172.28.128.5", host: "willion-ubuntu-db2" }
   - { ip: "172.28.128.6", host: "willion-ubuntu-db3" }
 
-etcd_hostname_ip: "{{ ansible_eth1.ipv4.address }}"  
-postgresql_hostname_ip: "{{ ansible_eth1.ipv4.address }}"
+etcd_ip: "{{ ansible_eth1.ipv4.address }}"  
+postgresql_ip: "{{ ansible_eth1.ipv4.address }}"
 
 postgresql_cluster: false
 postgresql_add_repo: true
@@ -14,8 +14,8 @@ postgresql_etcd_hosts:
   - 172.28.128.5:2379
   - 172.28.128.6:2379
 
-postgresql_version: 14
-postgresql_port: 5432
+postgresql_version: 13
+postgresql_port: 6432
 postgresql_patroni_version: "2.1*"
 
 postgresql_patroni_cluster_name: patroni_test
@@ -28,7 +28,7 @@ postgresql_encoding: UTF8
 postgresql_locale: en_US.UTF-8
 postgresql_parameters:
   wal_keep_size: '256MB'
-  min_wal_size: '128MB'
+  min_wal_size: '64MB'
   max_wal_size: '1GB'
   shared_preload_libraries: pg_stat_statements,auto_explain,timescaledb
 
@@ -43,13 +43,6 @@ postgresql_pg_hba:
  - {type: "host", database: "replication", user: "all", address: "172.28.128.6/32", method: "md5"}
 
 postgresql_extensions:
-# Обязательный темплейт ниже, необходимо определить в Groupvars
- - {ext: "pg_stat_statements", db: "postgres", state: "present"}
- - {ext: "pg_stat_statements", db: "template1", state: "present"}
- - {ext: "pg_buffercache", db: "template1", state: "present"}
- - {ext: "pgrowlocks", db: "template1", state: "present"}
- - {ext: "pgstattuple", db: "template1", state: "present"}
- - {ext: "dblink", db: "template1", state: "present"}
  - {ext: "timescaledb", db: "zabbix", state: "present"}
 postgresql_users:
  - { user: "zabbix", pass: "zabbix", flag: "LOGIN,CREATEDB,CREATEROLE", state: "present"}

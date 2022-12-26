@@ -9,7 +9,7 @@ etcd_user: etcd
 etcd_group: etcd
 
 etcd_hostname_name: '{{ ansible_hostname }}'
-etcd_hostname_ip: '{{ ansible_default_ipv4.address }}'
+etcd_ip: '{{ ansible_default_ipv4.address }}'
 etcd_cluster_token: change_me # Уникальный токен, определяем в group vars, через vault
 
 etcd_init_cluster_state: "new" # Параметр инициализии кластера ('new' или 'existing').
