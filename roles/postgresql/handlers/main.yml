@@ -33,3 +33,16 @@
   register: psql_reload_result
   changed_when: psql_reload_result.rc == 0
   failed_when: false
+
+- name: restart postgresql patroni
+  uri:
+    url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/restart"
+    method: POST
+  run_once: true
+  
+- name: reload postgresql patroni
+  uri:
+    url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/reload"
+    method: POST
+    status_code: 202
+  run_once: true

@@ -47,9 +47,8 @@
 
 - name: timescaledb install | establish dependencies
   apt:
-    name: "{{ item }}"
+    pkg: "{{ postgresql_timescaledb_pkg }}"
     state: present
-  with_items: "{{ postgresql_timescaledb_pkg }}"
   when:
     - ansible_os_family == "Debian"
   tags:

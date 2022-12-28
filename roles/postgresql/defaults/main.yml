@@ -15,7 +15,7 @@ postgresql_data: "{{ postgresql_data_dir }}/{{ postgresql_version }}"
 postgresql_log: "/var/log/postgresql/postgresql-{{ postgresql_version }}.log"
 
 postgresql_patroni_config_dir: "/etc/patroni"
-postgresql_patroni_version: "2.1*" # Для  допустимо RedHat 2.1.4*
+postgresql_patroni_version: "2.1*" # Для RedHat допустимо 2.1.4*
 postgresql_patroni_cluster_name: "cluster"
 # Необходимо определить в Groupvars через vault
 postgresql_postgres_password: vault_pass_postgres
@@ -36,16 +36,19 @@ postgresql_use_slots: true
 postgresql_encoding: UTF8
 postgresql_locale: en_US.UTF-8 #en_US.UTF-8 #ru_RU.UTF-8 Для Debian работает добавление локалей, для RedHat нет(точнее нада добалять, модуль ansible.locale в редахат не работает)
 
+#Переменная для обновления параметров postgresql в postgresql.auto.conf или api patroni
 postgresql_parameters: {}
 # example:
 #postgresql_parameters:
 #   max_connections: 122
 #   another_parameter: another_value
+
 postgresql_patroni_etcd_hosts: {}
 # Необходимо определить в Groupvars для patroni
 #  - IP-node1:2379
 #  - IP-node2:2379
 #  - IP-node3:2379
+
 postgresql_pg_hba: {}
 # Обязательный темплейт ниже, необходимо определить в Groupvars
 # Необходимо дополнить своими правилами
@@ -68,6 +71,7 @@ postgresql_members: {}
 
 postgresql_db: {}
 # - {db: "app", owner: "postgres", state: "present"}
+
 postgresql_timescaledb_install: false
 postgresql_timescaledb_install_scp: false
 postgresql_timescaledb_repo_keys: "https://packagecloud.io/timescale/timescaledb/gpgkey"

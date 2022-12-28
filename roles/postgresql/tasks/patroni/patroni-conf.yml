@@ -1,0 +1,48 @@
+- name: update postgresql config
+  uri:
+    url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/config"
+    method: PATCH
+    body:
+      ttl: "{{ postgresql_ttl }}"
+      loop_wait: "{{ postgresql_loop_wait }}"
+      retry_timeout: "{{ postgresql_retry_timeout }}"
+      maximum_lag_on_failover: "{{ postgresql_maximum_lag_on_failover }}"
+      master_start_timeout: "{{ postgresql_master_start_timeout }}"
+      synchronous_mode: "{{ postgresql_synchronous_mode }}"
+      synchronous_mode_strict: "{{ postgresql_synchronous_mode_strict }}"
+      synchronous_node_count: "{{ postgresql_synchronous_node_count }}"
+      postgresql:
+        parameters:
+          "{{ postgresql_parameters }}"
+        use_pg_rewind: "{{ postgresql_use_pg_rewind }}"
+        use_slots: "{{ postgresql_use_slots }}"
+    return_content: yes
+    body_format: json
+  run_once: true
+  notify: reload postgresql patroni
+  when:
+    - postgresql_parameters is defined
+    - postgresql_parameters | length > 0
+  tags:
+    - patroni::patroni-conf
+
+- name: reload postgresql patroni
+  uri:
+    url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/reload"
+    method: POST
+    status_code: [200, 503, 202]
+  run_once: true
+  tags:
+    - patroni::patroni-conf
+  
+- name: pending restart postgresql patroni
+  uri:
+    url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/restart"
+    method: POST
+    body: 
+      restart_pending: "true"
+    status_code: [200, 503]
+    body_format: json
+  run_once: true
+  tags:
+    - patroni::patroni-conf

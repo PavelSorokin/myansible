@@ -11,11 +11,13 @@
   - postgresql::ext
   - patroni::install
   - patroni::patroni-status
+  - patroni::patroni-conf
 
 - name: include vars postgresql-conf.yaml
   include_vars: "postgresql-conf.yaml"
   tags:
   - postgresql::conf
+  - patroni::patroni-conf
   - postgresql::init
   - patroni::install
 
@@ -62,6 +64,13 @@
   - postgresql::conf
   when:
   - not postgresql_cluster
+
+- name: Include patroni-conf instructions
+  include_tasks: patroni/patroni-conf.yml
+  tags:
+  - patroni::patroni-conf
+  when:
+  - postgresql_cluster
 
 - name: Include postgresql-start instructions
   include_tasks: postgresql/postgresql-start.yml
