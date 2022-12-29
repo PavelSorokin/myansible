@@ -39,7 +39,7 @@
     url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/restart"
     method: POST
   run_once: true
-  
+
 - name: reload postgresql patroni
   uri:
     url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/reload"
