@@ -31,7 +31,12 @@
     url: "http://{{ postgresql_ip }}:{{ postgresql_restapi_port }}/reload"
     method: POST
     status_code: [200, 503, 202]
-  run_once: true
+  tags:
+    - patroni::patroni-conf
+
+- name: Sleep 20 seconds and continue with play
+  wait_for:
+    timeout: 20
   tags:
     - patroni::patroni-conf
 
@@ -43,6 +48,5 @@
       restart_pending: "true"
     status_code: [200, 503]
     body_format: json
-  run_once: true
   tags:
     - patroni::patroni-conf
