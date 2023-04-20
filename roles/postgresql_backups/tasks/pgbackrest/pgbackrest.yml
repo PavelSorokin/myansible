@@ -2,26 +2,22 @@
 - name: deploy pgbackrest
   include_tasks: pgbackrest/pgbackrest-install.yml
   tags:
-    - pgbackrest_install
-    - pgbackrest_conf
+    - pgbackrest::install
+    - pgbackrest::conf
 
 - name: deploy ssh keys
   include_tasks: pgbackrest/pgbackrest-ssh.yml
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: deploy ssh knows_host keys
   include_tasks: pgbackrest/pgbackrest-sshkeys.yml
   loop: "{{ pgbackrest_nodes }}"
   tags:
-    - pgbackrest_install
-- name: deploy backup user
-  include_tasks: pgbackrest/pgbackrest-backup-user.yml
-  tags:
-    - pgbackrest_backup_user
+    - pgbackrest::install
 
 - name: deploy stanza
   include_tasks: pgbackrest/pgbackrest-stanza.yml
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
     - pgbackrest_stanza

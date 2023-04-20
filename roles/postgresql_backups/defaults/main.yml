@@ -1,19 +1,16 @@
 pgbackrest: false
-pgbackrest_install_state: latest #present
+pgbackrest_install_state: present #present
 pgbackrest_cluster_name: {}
 pgbackrest_nodes: {}
 pgbackrest_vault_env: {}
 pgbackrest_pgdata: {}
-pgbackrest_postgresql_port: 5433
+pgbackrest_postgresql_port: 5432
 pgbackrest_postgresql_socket: /var/run/postgresql
 pgbackrest_postgresql_user: pgbackup
 pgbackrest_vault_url: https://vault.samokat.io
-pgbackrest_s3_creds: "{{ lookup('hashi_vault', 'secret={{ pgbackrest_vault_env }}/data/dataops/pgbackrest token={{ vault_token }} url={{ pgbackrest_vault_url }}') }}"
+#pgbackrest_s3_creds: "{{ lookup('hashi_vault', 'secret={{ pgbackrest_vault_env }}/data/dataops/pgbackrest token={{ vault_token }} url={{ pgbackrest_vault_url }}') }}"
 pgbackrest_s3_endpoint: ""
-pgbackrest_s3_access: "{{ pgbackrest_s3_creds['user'] }}"
-pgbackrest_s3_secret: "{{ pgbackrest_s3_creds['key'] }}"
-pgbackrest_s3_bucket: "{{ pgbackrest_s3_creds['bucket'] }}"
+pgbackrest_s3_access: ""
+pgbackrest_s3_secret: ""
+pgbackrest_s3_bucket: ""
 pgbackrest_conf: {}
-pgbackrest_group: postgres
-pgbackrest_user: pgbackup
-pgbackrest_password: {}

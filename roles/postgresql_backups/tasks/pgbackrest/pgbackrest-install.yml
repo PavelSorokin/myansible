@@ -7,7 +7,7 @@
   with_items:
     - "{{ pgbackrest_packages }}"
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: сreate the pgbackrest dir
   file:
@@ -21,7 +21,7 @@
     - /var/log/pgbackrest
     - /tmp/pgbackrest
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: сreate the script dir
   file:
@@ -31,7 +31,7 @@
     group: postgres
     state: directory
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: create pgbackrest.conf
   template:
@@ -41,8 +41,8 @@
     group: postgres
     mode: "0644"
   tags:
-    - pgbackrest_install
-    - pgbackrest_conf
+    - pgbackrest::install
+    - pgbackrest::conf
 
 - name: upload the backup script along with config
   template:
@@ -55,5 +55,5 @@
     - check.sh
     - backup.sh
   tags:
-    - pgbackrest_install
-    - pgbackrest_conf
+    - pgbackrest::install
+    - pgbackrest::conf

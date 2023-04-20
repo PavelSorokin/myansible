@@ -6,7 +6,7 @@
   register: ssh_scan
   changed_when: false
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: add known_hosts
   become_user: postgres
@@ -17,4 +17,4 @@
     path: "{{ pgbackrest_home_postgres }}.ssh/known_hosts"
     state: present
   tags:
-    - pgbackrest_install
+    - pgbackrest::install

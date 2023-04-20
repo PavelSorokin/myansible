@@ -9,7 +9,7 @@
     group: postgres
     mode: 0700
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - block:
   - name: generate an OpenSSH keypair with the default values (4096 bits, rsa)
@@ -20,7 +20,7 @@
       group: postgres
     register: publickey
     tags:
-      - pgbackrest_install
+      - pgbackrest::install
 
   - name: set priv ssh keys
     run_once: true
@@ -28,7 +28,7 @@
     register: ssh_keys
     changed_when: false
     tags:
-     - pgbackrest_install
+     - pgbackrest::install
 
 - name: set authorized key taken from file
   authorized_key:
@@ -36,14 +36,14 @@
     state: present
     key: "{{ publickey.public_key }}"
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: check key file exists
   stat:
     path: "{{ pgbackrest_home_postgres }}.ssh/id_rsa"
   register: keyfile
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
 
 - name: add ssh privkey for pg server
   become_user: postgres
@@ -54,4 +54,4 @@
     mode: 0600
   when: keyfile.stat.exists == false
   tags:
-    - pgbackrest_install
+    - pgbackrest::install

@@ -18,7 +18,7 @@
         ('does not exist' not in stanza_check.stderr)
       )
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
     - pgbackrest_stanza
 
 - name: create the stanza
@@ -39,5 +39,5 @@
       ('has a stanza-create been performed?' in stanza_check.stderr) or
       ('does not exist' in stanza_check.stderr)
   tags:
-    - pgbackrest_install
+    - pgbackrest::install
     - pgbackrest_stanza

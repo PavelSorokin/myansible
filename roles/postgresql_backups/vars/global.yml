@@ -5,7 +5,7 @@ __pgbackrest_global_conf:
   delta: y
   log-level-console: info
   log-level-file: info
-  process-max: 2
+  process-max: 3
   repo1-bundle-limit: 512MiB
   repo1-bundle-size: 8GiB
   repo1-bundle: y
@@ -20,3 +20,4 @@ __pgbackrest_global_conf:
   repo1-s3-verify-tls: y
   repo1-type: s3
   start-fast: y
+  archive-get-queue-max: 4GiB
