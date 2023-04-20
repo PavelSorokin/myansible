@@ -1,0 +1,43 @@
+---
+- name: check the status of the stanza
+  run_once: true
+  become_user: postgres
+  command: >-
+    pgbackrest
+      --config=/etc/pgbackrest/pgbackrest.conf
+      --stanza={{ pgbackrest_cluster_name }}
+      --log-level-console=info
+      check
+  register: stanza_check
+  changed_when: false
+  failed_when:
+    - "stanza_check.rc != 0"
+    - >-
+      (
+        ('has a stanza-create been performed?' not in stanza_check.stderr) and
+        ('does not exist' not in stanza_check.stderr)
+      )
+  tags:
+    - pgbackrest_install
+    - pgbackrest_stanza
+
+- name: create the stanza
+  run_once: true
+  become_user: postgres
+  command: >-
+    pgbackrest --config=/etc/pgbackrest/pgbackrest.conf
+      --stanza={{ pgbackrest_cluster_name }}
+      --log-level-console=info
+      stanza-create
+  register: stanza_create_cmd
+  when:
+    - >-
+      ('skipped' not in stanza_check) or
+      (not stanza_check.skipped)
+    - >-
+      (stanza_check.rc != 0) or
+      ('has a stanza-create been performed?' in stanza_check.stderr) or
+      ('does not exist' in stanza_check.stderr)
+  tags:
+    - pgbackrest_install
+    - pgbackrest_stanza

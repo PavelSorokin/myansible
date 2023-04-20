@@ -1,0 +1,24 @@
+[{{ pgbackrest_cluster_name }}]
+{% set pgbackrest_nodes_rest = pgbackrest_nodes | reject('equalto', inventory_hostname) %}
+{% for pg_host in pgbackrest_nodes_rest %}
+{% for host in pgbackrest_nodes if host == inventory_hostname and loop.index == 2 %}
+pg1-path={{ pgbackrest_pgdata }}
+pg1-port={{ pgbackrest_postgresql_port }}
+pg1-socket-path={{ pgbackrest_postgresql_socket }}
+pg1-user={{ pgbackrest_postgresql_user }}
+{% endfor %}
+{% if pgbackrest_nodes_rest|length == (pgbackrest_nodes|length - 1)%}
+{% set pref = "pg" + (loop.index + 1) | string %}
+{% elif pgbackrest_nodes_rest|length == pgbackrest_nodes|length  %}
+{% set pref = "pg" + loop.index | string %}
+{% endif %}
+{{ pref }}-host={{ pg_host }}
+{{ pref }}-path={{ pgbackrest_pgdata }}
+{{ pref }}-port={{ pgbackrest_postgresql_port }}
+{{ pref }}-socket-path={{ pgbackrest_postgresql_socket }}
+{{ pref }}-user={{ pgbackrest_postgresql_user }}
+{% endfor %}
+[global]
+{% for key, value in (__pgbackrest_global_conf|combine(pgbackrest_conf)).items() %}
+{{ key }}={{ value }}
+{% endfor %}

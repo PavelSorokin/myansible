@@ -1,0 +1,11 @@
+#!/bin/bash
+BACKUP_TYPE=$1
+
+if [ $BACKUP_TYPE == "full" ]; then
+        /usr/bin/pgbackrest --config=/etc/pgbackrest/pgbackrest.conf --stanza={{ pgbackrest_cluster_name }} --log-level-console=detail backup --type=full
+elif [ $BACKUP_TYPE == "delta" ]; then
+        /usr/bin/pgbackrest --config=/etc/pgbackrest/pgbackrest.conf --stanza={{ pgbackrest_cluster_name }} --log-level-console=detail backup
+else
+        echo "no choose backup type"
+        exit 1
+fi

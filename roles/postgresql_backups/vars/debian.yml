@@ -1,0 +1,3 @@
+pgbackrest_packages:
+  - pgbackrest
+pgbackrest_home_postgres: "/var/lib/postgresql/"

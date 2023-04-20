@@ -1,0 +1,21 @@
+---
+- name: include vars {{ ansible_os_family | lower }}.yml
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - pgbackrest_install
+
+- name: include vars global.yml
+  include_vars: "global.yml"
+  tags:
+    - pgbackrest_install
+    - pgbackrest_conf
+
+- name: Include pgbackrest tasks {{ ansible_os_family }}
+  include_tasks: pgbackrest/pgbackrest.yml
+  when:
+    - pgbackrest
+  tags:
+    - pgbackrest_install
+    - pgbackrest_conf
+    - pgbackrest_backup_user
+    - pgbackrest_statza

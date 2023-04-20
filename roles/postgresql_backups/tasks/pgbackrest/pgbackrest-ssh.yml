@@ -1,0 +1,57 @@
+---
+
+- name: create folder .ssh
+  become_user: postgres
+  file:
+    path: "{{ pgbackrest_home_postgres }}.ssh"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0700
+  tags:
+    - pgbackrest_install
+
+- block:
+  - name: generate an OpenSSH keypair with the default values (4096 bits, rsa)
+    run_once: true
+    openssh_keypair:
+      path: "{{ pgbackrest_home_postgres }}.ssh/id_rsa"
+      owner: postgres
+      group: postgres
+    register: publickey
+    tags:
+      - pgbackrest_install
+
+  - name: set priv ssh keys
+    run_once: true
+    shell: "cat {{ pgbackrest_home_postgres }}.ssh/id_rsa"
+    register: ssh_keys
+    changed_when: false
+    tags:
+     - pgbackrest_install
+
+- name: set authorized key taken from file
+  authorized_key:
+    user: postgres
+    state: present
+    key: "{{ publickey.public_key }}"
+  tags:
+    - pgbackrest_install
+
+- name: check key file exists
+  stat:
+    path: "{{ pgbackrest_home_postgres }}.ssh/id_rsa"
+  register: keyfile
+  tags:
+    - pgbackrest_install
+
+- name: add ssh privkey for pg server
+  become_user: postgres
+  lineinfile:
+    path: "{{ pgbackrest_home_postgres }}.ssh/id_rsa"
+    line: "{{ ssh_keys.stdout }}"
+    create: true
+    mode: 0600
+  when: keyfile.stat.exists == false
+  tags:
+    - pgbackrest_install

@@ -1,0 +1,20 @@
+---
+- name: scan for SSH host keys
+  become: true
+  become_user: postgres
+  shell: "ssh-keyscan -t ecdsa-sha2-nistp256 {{ item }} 2>/dev/null"
+  register: ssh_scan
+  changed_when: false
+  tags:
+    - pgbackrest_install
+
+- name: add known_hosts
+  become_user: postgres
+  become: true
+  known_hosts:
+    name: '{{ item }}'
+    key: "{{ ssh_scan.stdout_lines|join('\n') }}"
+    path: "{{ pgbackrest_home_postgres }}.ssh/known_hosts"
+    state: present
+  tags:
+    - pgbackrest_install

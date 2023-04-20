@@ -1,0 +1,59 @@
+---
+
+- name: install pgbackrest packages
+  package:
+    name: "{{ item }}"
+    state: "{{ pgbackrest_install_state }}"
+  with_items:
+    - "{{ pgbackrest_packages }}"
+  tags:
+    - pgbackrest_install
+
+- name: сreate the pgbackrest dir
+  file:
+    path: "{{ item }}"
+    mode: "0750"
+    owner: postgres
+    group: postgres
+    state: directory
+  with_items:
+    - /etc/pgbackrest
+    - /var/log/pgbackrest
+    - /tmp/pgbackrest
+  tags:
+    - pgbackrest_install
+
+- name: сreate the script dir
+  file:
+    path: /var/lib/postgresql/script
+    mode: "0750"
+    owner: postgres
+    group: postgres
+    state: directory
+  tags:
+    - pgbackrest_install
+
+- name: create pgbackrest.conf
+  template:
+    src: pgbackrest.conf.j2
+    dest: /etc/pgbackrest/pgbackrest.conf
+    owner: postgres
+    group: postgres
+    mode: "0644"
+  tags:
+    - pgbackrest_install
+    - pgbackrest_conf
+
+- name: upload the backup script along with config
+  template:
+    src: "pgbackrest/{{ item }}.j2"
+    dest: "/var/lib/postgresql/script/{{ item }}"
+    mode: 0750
+    owner: postgres
+    group: postgres
+  loop:
+    - check.sh
+    - backup.sh
+  tags:
+    - pgbackrest_install
+    - pgbackrest_conf
